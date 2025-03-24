@@ -1,0 +1,29 @@
+#open port in Tường lửa mặc định: firewalld (CentOS 7, 8, CentOS Stream,Fedora).
+sudo firewall-cmd --permanent --add-port=30015/tcp
+sudo firewall-cmd --reload
+#-------------------
+#Kiểm tra port trong firewalld
+sudo firewall-cmd --list-ports
+
+#---------------------
+#Kiểm tra port đang lắng nghe:
+sudo ss -tuln | grep 30015
+
+# Debian/Ubuntu
+sudo ufw allow 30015/tcp
+
+sudo ufw status
+
+sudo ss -tuln | grep 30015
+Cài đặt công cụ nếu thiếu:
+CentOS/Fedora: Nếu firewalld chưa có, cài bằng sudo dnf install firewalld.
+Debian/Ubuntu: Nếu ufw chưa kích hoạt, bật bằng sudo ufw enable.
+######################################
+Thay thế bằng iptables:
+Nếu không muốn dùng firewalld hay ufw, bạn có thể dùng iptables (có trên hầu hết các distro):
+Mở port: sudo iptables -A INPUT -p tcp --dport 30015 -j ACCEPT
+Kiểm tra: sudo iptables -L -n | grep 30015
+
+###################################
+Kiểm tra từ xa:
+Dùng nmap để quét từ máy khác: nmap <IP_máy_chủ>. Nếu thấy 30015/tcp open, port đã mở và có thể truy cập.

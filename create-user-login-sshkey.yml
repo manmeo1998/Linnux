@@ -1,0 +1,44 @@
+#create user
+useradd: tenuser
+#trao quyền sudo
+sudo usermod -aG sudo tenuser
+# check quyền trong thu mục group
+vim /etc/grous
+# Chỉnh sửa file visudo để pass qua password
+sudo visudo
+#thêm dòng ở gần sudo
+tên_user ALL=(ALL:ALL) ALL #lưu lại cấu hình
+#check pass user và check thư mục home đã đc gắn chưa
+cat/etc/passwd
+#tạo thư mục home cho user
+sudo mkdir -p /home/tenuser
+#gán quyền sở hữu thu mục cho user
+sudo chown -R user:user /home/user
+#tạo SSH key cho user
+ssh-keygen 
+#Hệ thống sẽ hỏi nơi lưu key. Nhấn Enter để sử dụng đường dẫn mặc định (/home/ntq/.ssh/id_rsa).
+#tạo file authrized_keys:
+cat id_rsa.pub >> authorized_keys
+chmod 600 authorized_keys
+# Thiết lập quyền và cấu hình SSH server
+cat /etc/ssh/sshd_config
+PubkeyAuthentication yes
+PasswordAuthentication no
+PermitRootLogin no
+
+# Thiết Lập bin/bash cho user
+sudo chsh -s /bin/bash tên_user
+
+# Kiểm tra dung lượng Volume Group
+vgdisplay
+hoac
+vgs
+
+#Mở rộng Logical Volume
+lvextend -l +100%FREE /dev/mapper/ubuntu--vg-ubuntu--lv
+
+#  Mở rộng filesystem
+Nếu bạn đang sử dụng ext4, chạy lệnh sau để mở rộng filesystem:
+    resize2fs /dev/mapper/ubuntu--vg-ubuntu--lv
+Nếu bạn đang dùng xfs, dùng lệnh:
+    xfs_growfs /
