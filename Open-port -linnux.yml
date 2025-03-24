@@ -27,3 +27,4 @@ Kiểm tra: sudo iptables -L -n | grep 30015
 ###################################
 Kiểm tra từ xa:
 Dùng nmap để quét từ máy khác: nmap <IP_máy_chủ>. Nếu thấy 30015/tcp open, port đã mở và có thể truy cập.
+telnet IP porrt
