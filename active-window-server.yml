@@ -1,0 +1,8 @@
+DISM /Online /Set-Edition:ServerStandard /AcceptEula /ProductKey:N69G4-B89J2-4G8F4-WWYCC-J464C
+
+### Thực hiện trên powershell với quyền administrator
+# Test-NetConnection 10.0.64.91 -p 1688
+slmgr /upk
+slmgr /ipk N69G4-B89J2-4G8F4-WWYCC-J464C
+slmgr /skms 10.0.64.91:1688
+slmgr /ato
