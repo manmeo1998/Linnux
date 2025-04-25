@@ -1,0 +1,49 @@
+Các bước chi tiết để mount ổ cứng và tự động mount sau khi reset máy không bị mất phân vùng
+Bước 1: Tạo phân vùng cho từng ổ cứng
+sử dụng câu lệnh "lsblk" để check các ổ cứng chưa được mount
+ví dụ các ổ có tên là  /dev/sda, /dev/sdb, /dev/nvme1n1, /dev/nvme2n1
+#Tạo phân vùng cho các phân vùng trên /dev/sda
+sudo fdisk /dev/sda
+Nhấn n để tạo phân vùng mới.
+Chọn p (primary partition), nhấn Enter.
+Chọn số phân vùng 1, nhấn Enter.
+Nhấn Enter 2 lần để sử dụng toàn bộ dung lượng ổ.
+Nhấn w để lưu và thoát
+# Lặp lại cho các ổ còn lại
+Kiểm tra lại phân vùng
+lsblk đã đc fdisk chưa
+Bước 2: Định dạng các phân vùng
+Sau khi tạo phân vùng, bạn cần định dạng chúng. Mình sẽ dùng định dạng ext4 (phù hợp cho Linux)
+Định dạng các phân vùng:
+sudo mkfs.ext4 /dev/sda1
+sudo mkfs.ext4 /dev/sdb1
+# Lặp lại cho các ổ còn lại
+Kiểm tra UUID và định dạng các phân vùng:
+sudo blkid
+Kết quả sẽ giống như:
+/dev/sda1: UUID="abcd1234-5678-90ef-ghij-klmnopqrstuv" TYPE="ext4"
+/dev/sdb1: UUID="wxyz9876-5432-10ab-cdef-uvwxyzabcdef" TYPE="ext4"
+/dev/nvme1n1p1: UUID="1234abcd-5678-90ef-ghij-klmn12345678" TYPE="ext4"
+/dev/nvme2n1p1: UUID="5678wxyz-9012-34ab-cdef-1234567890ab" TYPE="ext4"
+Ghi lại UUID của từng phân vùng, bạn sẽ cần chúng ở bước sau.
+
+Bước 3: Tạo thư mục để mount
+Tạo các thư mục để mount từng ổ:
+sudo mkdir /mnt/hdd1  # Cho /dev/sda1 (14.6T)
+sudo mkdir /mnt/hdd2  # Cho /dev/sdb1 (14.6T)
+sudo mkdir /mnt/hdd3  # Cho /dev/nvme1n1p1 (931.5G)
+sudo mkdir /mnt/hdd4  # Cho /dev/nvme2n1p1 (931.5G)
+Bước 4: Cấu hình tự động mount bằng /etc/fstab
+Để các ổ tự động mount sau khi reset/khởi động, bạn cần chỉnh sửa file /etc/fstab và sử dụng UUID (để tránh lỗi nếu tên thiết bị thay đổi):
+sudo cp /etc/fstab /etc/fstab.bak
+sudo nano /etc/fstab
+Thêm các dòng sau (dùng UUID từ lệnh blkid)
+UUID=abcd1234-5678-90ef-ghij-klmnopqrstuv  /mnt/hdd1  ext4  defaults  0  2
+UUID=wxyz9876-5432-10ab-cdef-uvwxyzabcdef  /mnt/hdd2  ext4  defaults  0  2
+UUID=1234abcd-5678-90ef-ghij-klmn12345678  /mnt/hdd3  ext4  defaults  0  2
+UUID=5678wxyz-9012-34ab-cdef-1234567890ab  /mnt/hdd4  ext4  defaults  0  2
+Thay các UUID bằng giá trị thực tế từ lệnh blkid:
+Lưu và thoát: Nhấn Ctrl+O, Enter, Ctrl+X.
+Kiểm tra cấu hình /etc/fstab
+sudo mount -a
+#Nếu không có lỗi, cấu hình đã đúng.
